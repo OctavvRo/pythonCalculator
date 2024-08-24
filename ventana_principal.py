@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from datetime import datetime
+from tkcalendar import DateEntry  # Importar DateEntry de tkcalendar
 
 class VentanaPrincipal(tk.Tk):
 
@@ -29,16 +30,16 @@ class VentanaPrincipal(tk.Tk):
         self.empresa_entry = tk.Entry(form_frame)
         self.empresa_entry.grid(row=0, column=1, padx=10, pady=10)
 
-        tk.Label(form_frame, text="Desde (YYYY-MM-DD):").grid(row=1, column=0, padx=10, pady=10)
-        self.desde_entry = tk.Entry(form_frame)
+        tk.Label(form_frame, text="Desde:").grid(row=1, column=0, padx=10, pady=10)
+        self.desde_entry = DateEntry(form_frame, date_pattern='yyyy-mm-dd')  # Usar DateEntry para la fecha "Desde"
         self.desde_entry.grid(row=1, column=1, padx=10, pady=10)
 
-        tk.Label(form_frame, text="Hasta (YYYY-MM-DD):").grid(row=2, column=0, padx=10, pady=10)
-        self.hasta_entry = tk.Entry(form_frame)
+        tk.Label(form_frame, text="Hasta:").grid(row=2, column=0, padx=10, pady=10)
+        self.hasta_entry = DateEntry(form_frame, date_pattern='yyyy-mm-dd')  # Usar DateEntry para la fecha "Hasta"
         self.hasta_entry.grid(row=2, column=1, padx=10, pady=10)
 
         tk.Label(form_frame, text="Régimen Previsional:").grid(row=3, column=0, padx=18, pady=5)
-        self.tipo_trabajo = ttk.Combobox(form_frame, values=["Construcción", "Civil"], state="readonly")
+        self.tipo_trabajo = ttk.Combobox(form_frame, values=["Construcción", "Civil", "Aceria/Forja", "Aviación","Carne","Ceguera","Chofer Tr. Carga Aut.", "Chofer T Carga RD","Chofer Taxista","Electricidad","Embarcadero","Estibador","Futbolista Prof.", "Gas/Petroleo","Malvinas", "Mineria/ Forja y Fragua", "Panadero, Arriero, Refineria","Peon Rural","Portuario","Telefonista","Telegrafo","Temporario Veraneio","Trato de enfermedades","Vidrio"], )
         self.tipo_trabajo.grid(row=3, column=1, padx=10, pady=5)
 
         tk.Button(form_frame, text="Agregar", command=self.on_agregar).grid(row=4, column=1, padx=20, pady=5)
@@ -75,8 +76,9 @@ class VentanaPrincipal(tk.Tk):
 
 
         # Etiqueta para mostrar el total de días trabajados
-        self.total_label = tk.Label(table_frame, text=f"Total de días trabajados: {self.total_dias}",font=("Arial", 14, "bold"))
+        self.total_label = tk.Label(table_frame, text=f"Total de días trabajados: {self.total_dias}",font=("Arial", 14, "bold"), pady=25)
         self.total_label.pack()
+
     def centrar_ventana(self, width, height):
         # Obtener el ancho y alto de la pantalla
         screen_width = self.winfo_screenwidth()
