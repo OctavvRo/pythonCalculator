@@ -1,16 +1,22 @@
 import tkinter as tk
 from tkinter import ttk
 from datetime import datetime
-from tkcalendar import DateEntry  # Importar DateEntry de tkcalendar
+from tkcalendar import DateEntry
+from con import obtener_cliente_por_id  # Asegúrate de tener esta función en tu módulo
 
 class VentanaPrincipal(tk.Tk):
-
-    def __init__(self, nombre, apellido, dni):
+    def __init__(self, id_cliente):
         super().__init__()
         self.title("Ventana Principal")
 
+        # Obtener datos del cliente utilizando el ID
+        cliente = obtener_cliente_por_id(id_cliente)
+        nombre = cliente['nombre']
+        apellido = cliente['apellido']
+        dni = cliente['dni']
+
         # Llamada para centrar la ventana
-        self.centrar_ventana(1200, 400)  # Ajusta el tamaño de la ventana según lo necesites
+        self.centrar_ventana(1200, 450)
 
         # Crear el frame para mostrar datos
         self.info_frame = tk.Frame(self, bg="lightgrey", padx=10, pady=10)
@@ -31,64 +37,59 @@ class VentanaPrincipal(tk.Tk):
         self.empresa_entry.grid(row=0, column=1, padx=10, pady=10)
 
         tk.Label(form_frame, text="Desde:").grid(row=1, column=0, padx=10, pady=10)
-        self.desde_entry = DateEntry(form_frame, date_pattern='yyyy-mm-dd')  # Usar DateEntry para la fecha "Desde"
+        self.desde_entry = DateEntry(form_frame, date_pattern='yyyy-mm-dd')
         self.desde_entry.grid(row=1, column=1, padx=10, pady=10)
 
         tk.Label(form_frame, text="Hasta:").grid(row=2, column=0, padx=10, pady=10)
-        self.hasta_entry = DateEntry(form_frame, date_pattern='yyyy-mm-dd')  # Usar DateEntry para la fecha "Hasta"
+        self.hasta_entry = DateEntry(form_frame, date_pattern='yyyy-mm-dd')
         self.hasta_entry.grid(row=2, column=1, padx=10, pady=10)
 
         tk.Label(form_frame, text="Régimen Previsional:").grid(row=3, column=0, padx=18, pady=5)
-        self.tipo_trabajo = ttk.Combobox(form_frame, values=["Construcción", "Civil", "Aceria/Forja", "Aviación","Carne","Ceguera","Chofer Tr. Carga Aut.", "Chofer T Carga RD","Chofer Taxista","Electricidad","Embarcadero","Estibador","Futbolista Prof.", "Gas/Petroleo","Malvinas", "Mineria/ Forja y Fragua", "Panadero, Arriero, Refineria","Peon Rural","Portuario","Telefonista","Telegrafo","Temporario Veraneio","Trato de enfermedades","Vidrio"], )
+        self.tipo_trabajo = ttk.Combobox(form_frame, values=["Construcción", "Civil", "Aceria/Forja", "Aviación", ...])
         self.tipo_trabajo.grid(row=3, column=1, padx=10, pady=5)
 
-        tk.Button(form_frame, text="Agregar", command=self.on_agregar).grid(row=4, column=1, padx=20, pady=5)
+        tk.Button(form_frame, text="Agregar", command=self.on_agregar).grid(row=4, column=1, padx=20, pady=15)
 
         # Crear el frame para la tabla
         table_frame = tk.Frame(self)
         table_frame.pack(padx=10, pady=10, fill="both", expand=True, side="right")
 
-        # Crear la tabla
         columns = ("Empresa", "Desde", "Hasta", "Regimen Previsional", "Dias trabajados")
         self.table = ttk.Treeview(table_frame, columns=columns, show="headings")
 
-        # Definir el ancho de las columnas después de crear la tabla
         self.table.column("Empresa", width=150)
         self.table.column("Desde", width=100)
         self.table.column("Hasta", width=100)
         self.table.column("Regimen Previsional", width=150)
         self.table.column("Dias trabajados", width=120)
 
-        # Encabezados de las columnas
         self.table.heading("Empresa", text="Empresa")
         self.table.heading("Desde", text="Desde")
         self.table.heading("Hasta", text="Hasta")
         self.table.heading("Regimen Previsional", text="Regimen Previsional")
         self.table.heading("Dias trabajados", text="Dias trabajados")
 
-        # Empaquetar la tabla en el frame de la tabla
         self.table.pack()
 
-        # Inicializar la variable de días trabajados
         self.total_dias = 0
-
-        # Crear un frame adicional para colocar la etiqueta
-
-
-        # Etiqueta para mostrar el total de días trabajados
-        self.total_label = tk.Label(table_frame, text=f"Total de días trabajados: {self.total_dias}",font=("Arial", 14, "bold"), pady=25)
+        self.total_label = tk.Label(table_frame, text=f"Total de días trabajados: {self.total_dias}", font=("Arial", 14, "bold"), pady=25)
         self.total_label.pack()
 
+        self.save_button = tk.Button(table_frame, text="Guardar registro",
+                                     command=lambda: guardar_info(self.empresa_entry.get(),
+                                                                  self.desde_entry.get(),
+                                                                  self.hasta_entry.get(),
+                                                                  self.tipo_trabajo.get(),
+                                                                  self.total_dias))
+        self.save_button.pack()
+
     def centrar_ventana(self, width, height):
-        # Obtener el ancho y alto de la pantalla
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
 
-        # Calcular la posición x e y
         x = (screen_width // 2) - (width // 2)
         y = (screen_height // 2) - (height // 2)
 
-        # Establecer las dimensiones y la posición de la ventana
         self.geometry(f'{width}x{height}+{x}+{y}')
 
     def on_agregar(self):
@@ -115,5 +116,5 @@ class VentanaPrincipal(tk.Tk):
             return 0
 
 if __name__ == "__main__":
-    app = VentanaPrincipal("Octavio", "Rosales", "44958309")
+    app = VentanaPrincipal(1)  # Supongamos que estás probando con un ID de cliente específico
     app.mainloop()

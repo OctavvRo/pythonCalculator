@@ -1,6 +1,6 @@
 import tkinter as tk
 from ventana_principal import VentanaPrincipal
-
+from con import agregar_cliente
 class ventana1(tk.Tk):
 
     def __init__(self):
@@ -64,10 +64,18 @@ class ventana1(tk.Tk):
         apellido = self.entry_apellido.get()
         dni = self.entry_dni.get()
 
+        # Llamar a la función agregar_cliente
+        valor = agregar_cliente(nombre, apellido, dni)
+
         # Crear y mostrar VentanaPrincipal, pasándole los datos
-        ventana_principal = VentanaPrincipal(nombre, apellido, dni)
+        if valor:  # Corregido: se utiliza valor en lugar de valor == True
+            ventana_principal = VentanaPrincipal(nombre, apellido, dni)
+            self.destroy()  # Cerrar la ventana actual
+            ventana_principal.mainloop()
+    def abrir_lista_clientes(self):
+
         self.destroy()
-        ventana_principal.mainloop()
+
 
 if __name__ == "__main__":
     app = ventana1()  # Creas una instancia de la clase ventana1
