@@ -1,15 +1,15 @@
+# cliente_existente_lista.py
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-from con import traer_clientes  # Asegúrate de que esta función esté disponible en con.py
-from ventana_principal import \
-    VentanaPrincipal  # Asegúrate de que la clase VentanaPrincipal esté en ventana_principal.py
-
+from con import traer_clientes
+from ventana_principal import VentanaPrincipal
 
 class ListadoClientes(tk.Tk):
-    def __init__(self):
+    def __init__(self, ventana_anterior=None):
         super().__init__()
         self.title("Listado de clientes")
+        self.ventana_anterior = ventana_anterior
 
         # Crear tabla (Treeview) para mostrar clientes
         self.tree = ttk.Treeview(self, columns=("ID", "Nombre", "Apellido", "DNI"), show='headings')
@@ -24,10 +24,14 @@ class ListadoClientes(tk.Tk):
 
         # Botón para seleccionar un cliente
         btn_seleccionar = tk.Button(self, text="Seleccionar Cliente", command=self.seleccionar_cliente)
-        btn_seleccionar.pack(pady=10)
+        btn_seleccionar.pack(side= tk.RIGHT, pady=10, padx=50)
+
+        # Botón para volver atrás
+        btn_volver = tk.Button(self, text="Volver a atrás", command=self.volver)
+        btn_volver.pack(side= tk.LEFT, pady=10, padx=50)
+        self.centrar_ventana(self)
 
         # Centrar la ventana principal
-        self.centrar_ventana(self)
 
     def cargar_clientes(self):
         clientes = traer_clientes()
@@ -48,9 +52,11 @@ class ListadoClientes(tk.Tk):
         self.abrir_ventana_principal(id_cliente)
 
     def abrir_ventana_principal(self, id_cliente):
+        # Ocultar esta ventana antes de abrir la nueva
+        self.withdraw()
         # Crear instancia de VentanaPrincipal con el ID del cliente
         ventana_principal = VentanaPrincipal(id_cliente)
-        ventana_principal.grab_set()  # Esto hace que la ventana principal sea modal (opcional)
+        ventana_principal.grab_set()
 
         # Mostrar la ventana
         ventana_principal.mainloop()
@@ -63,8 +69,27 @@ class ListadoClientes(tk.Tk):
         y = (ventana.winfo_screenheight() // 2) - (alto // 2)
         ventana.geometry(f'{ancho}x{alto}+{x}+{y}')
 
+    def volver(self):
+        # Importar Ventana3 aquí para evitar la importación circular
+        from Inicio_ventana import Ventana3
+
+        # Ocultar la ventana actual
+        self.withdraw()
+
+        # Mostrar la ventana anterior (Ventana3)
+        if self.ventana_anterior:
+            self.ventana_anterior.deiconify()
+        else:
+            # Si la ventana anterior no está disponible, crear y mostrar Ventana3
+            ventana_anterior = Ventana3()
+            ventana_anterior.deiconify()
+
+        # Si decides destruir la ventana actual
+        # self.destroy()
+
 
 # Configuración de la ventana principal
 if __name__ == "__main__":
+    # Crear instancia de ListadoClientes pasando Ventana3 como ventana anterior
     app = ListadoClientes()
     app.mainloop()

@@ -69,3 +69,24 @@ def obtener_cliente_por_id(id_cliente):
     else:
         messagebox.showwarning("Advertencia", "El ID del cliente es obligatorio.")
         return None
+
+def traer_registros(id_cliente):
+    if id_cliente:
+        try:
+            con = con_db()
+            cursor = con.cursor(dictionary=True)  # Usamos dictionary=True para obtener los resultados como diccionarios
+
+            consulta = "SELECT * FROM registros WHERE id_cliente = %s"
+            cursor.execute(consulta, (id_cliente,))
+
+            registros = cursor.fetchall()
+            return registros
+        except mysql.connector.Error as error:
+            messagebox.showerror("Error", f"No se pudo traer los registros: {error}")
+            return []
+        finally:
+            cursor.close()
+            con.close()
+    else:
+        messagebox.showwarning("Advertencia", "El ID del cliente es obligatorio.")
+        return []

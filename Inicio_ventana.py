@@ -1,18 +1,20 @@
 import tkinter as tk
-from ventana_inicio import ventana1  # Asegúrate de que ventana1 esté correctamente importado
+from formulario_cliente_nuevo import ventana1  # Asegúrate de que ventana1 esté correctamente importado
 from ventana_principal import VentanaPrincipal
-from lista_clientes import ListadoClientes
+from cliente_existente_lista import ListadoClientes
 
 class Ventana3(tk.Tk):
 
-    def __init__(self):
+    def __init__(self, ventana_anterior=None):
         super().__init__()
-        self.title("Elección")
-        self.geometry("300x150")  # Ajusta el tamaño de la ventana según lo necesites
+        self.title("Calculadora de Jubilaciones")
+        self.ventana_anterior = ventana_anterior
+
+        self.geometry("400x250")  # Ajusta el tamaño de la ventana según lo necesites
         self.centrar_ventana(300, 150)
         # Crear el botón "Nuevo Cliente"
         self.nuevo_cliente_button = tk.Button(self, text="Nuevo Cliente", command=self.abrir_nuevo_cliente)
-        self.nuevo_cliente_button.pack(pady=10)
+        self.nuevo_cliente_button.pack(pady=20)
 
         # Crear el botón "Cliente Existente"
         self.cliente_existente_button = tk.Button(self, text="Cliente Existente", command=self.abrir_cliente_existente)

@@ -2,12 +2,13 @@ import tkinter as tk
 from tkinter import ttk
 from datetime import datetime
 from tkcalendar import DateEntry
-from con import obtener_cliente_por_id  # Asegúrate de tener esta función en tu módulo
+from con import obtener_cliente_por_id, traer_registros
 
 class VentanaPrincipal(tk.Tk):
     def __init__(self, id_cliente):
         super().__init__()
         self.title("Ventana Principal")
+        self.id_cliente = id_cliente
 
         # Obtener datos del cliente utilizando el ID
         cliente = obtener_cliente_por_id(id_cliente)
@@ -25,7 +26,7 @@ class VentanaPrincipal(tk.Tk):
         # Mostrar los datos recibidos en el frame, uno al lado del otro
         tk.Label(self.info_frame, text="Datos del cliente ", font=("Arial", 12, "bold")).grid(row=0, column=0, padx=5, pady=2, sticky='w')
         tk.Label(self.info_frame, text=f"Nombre: {nombre} {apellido}", font=("Arial", 12)).grid(row=0, column=1, padx=5, pady=2, sticky="w")
-        tk.Label(self.info_frame, text=f"DNI: {dni}", font=("Arial", 12)).grid(row=0, column=3, padx=5, pady=2, sticky="w")
+        tk.Label(self.info_frame, text=f"DNI: {dni}", font=("Arial", 12)).grid(row=0, column=2, padx=5, pady=2, sticky="w")
 
         # Crear el frame para el formulario
         form_frame = tk.Frame(self)
@@ -45,7 +46,7 @@ class VentanaPrincipal(tk.Tk):
         self.hasta_entry.grid(row=2, column=1, padx=10, pady=10)
 
         tk.Label(form_frame, text="Régimen Previsional:").grid(row=3, column=0, padx=18, pady=5)
-        self.tipo_trabajo = ttk.Combobox(form_frame, values=["Construcción", "Civil", "Aceria/Forja", "Aviación", ...])
+        self.tipo_trabajo = ttk.Combobox(form_frame, values=["Construcción", "Civil", "Acería/Forja", "Aviación"])
         self.tipo_trabajo.grid(row=3, column=1, padx=10, pady=5)
 
         tk.Button(form_frame, text="Agregar", command=self.on_agregar).grid(row=4, column=1, padx=20, pady=15)
@@ -75,13 +76,11 @@ class VentanaPrincipal(tk.Tk):
         self.total_label = tk.Label(table_frame, text=f"Total de días trabajados: {self.total_dias}", font=("Arial", 14, "bold"), pady=25)
         self.total_label.pack()
 
-        self.save_button = tk.Button(table_frame, text="Guardar registro",
-                                     command=lambda: guardar_info(self.empresa_entry.get(),
-                                                                  self.desde_entry.get(),
-                                                                  self.hasta_entry.get(),
-                                                                  self.tipo_trabajo.get(),
-                                                                  self.total_dias))
+        self.save_button = tk.Button(table_frame, text="Guardar registro", command=self.guardar_info)
         self.save_button.pack()
+
+        # Llamar a traer_registros para cargar los datos existentes
+        self.traer_registros()
 
     def centrar_ventana(self, width, height):
         screen_width = self.winfo_screenwidth()
@@ -114,6 +113,22 @@ class VentanaPrincipal(tk.Tk):
             return diferencia.days
         except ValueError:
             return 0
+
+    def traer_registros(self):
+        registros = traer_registros(self.id_cliente)
+        for registro in registros:
+            empresa = registro['empresa']
+            desde = registro['desde']
+            hasta = registro['hasta']
+            regimen = registro['regimen_previsional']
+            dias_trabajados = registro['dias_trabajados']
+
+            self.table.insert("", "end", values=(empresa, desde, hasta, regimen, dias_trabajados))
+
+            self.total_dias += dias_trabajados
+
+        self.total_label.config(text=f"Total de días trabajados: {self.total_dias}")
+
 
 if __name__ == "__main__":
     app = VentanaPrincipal(1)  # Supongamos que estás probando con un ID de cliente específico
